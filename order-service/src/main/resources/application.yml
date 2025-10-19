@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: order-service
+
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: ordersdb
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+server:
+  port: 8081
+portfolio:
+  service:
+    base-url: http://localhost:8082/api/portafolio
