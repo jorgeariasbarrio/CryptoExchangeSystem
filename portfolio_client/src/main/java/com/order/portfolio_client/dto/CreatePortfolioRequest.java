@@ -1,9 +1,12 @@
 package com.order.portfolio_client.dto;
 
 import lombok.Data;
+import lombok.NonNull;
 
 @Data
 public class CreatePortfolioRequest {
+    @NonNull
     private Long userId;
-    private double initialBalance;
+    @NonNull
+    private Double initialBalance;
 }

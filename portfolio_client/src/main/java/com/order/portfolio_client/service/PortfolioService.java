@@ -1,5 +1,6 @@
 package com.order.portfolio_client.service;
 
+import com.order.portfolio_client.dto.CreatePortfolioRequest;
 import com.order.portfolio_client.dto.OperationPortfolioRequest;
 import com.order.portfolio_client.exceptions.PortfolioAlreadyExistsException;
 import com.order.portfolio_client.exceptions.PortfolioNotFoundException;
@@ -22,15 +23,15 @@ public class PortfolioService {
         return repository.findByUserId(userId);
     }
 
-    public Portfolio createPortfolio(Long userId) {
-        if (repository.existsByUserId(userId)) {
-            throw new PortfolioAlreadyExistsException(userId);
+    public Optional<Portfolio> createPortfolio(CreatePortfolioRequest request) {
+        if (repository.existsByUserId(request.getUserId())) {
+            throw new PortfolioAlreadyExistsException(request.getUserId());
         }
-        return repository.save(Portfolio.builder()
-                .userId(userId)
-                .balance(0.0)
+        return Optional.of(repository.save(Portfolio.builder()
+                .userId(request.getUserId())
+                .balance(request.getInitialBalance() > 0 ? request.getInitialBalance() : 0.0)
                 .assets(new HashMap<>())
-                .build());
+                .build()));
     }
 
     public String hasEnoughBalance (OperationPortfolioRequest operationPortfolioRequest) {
