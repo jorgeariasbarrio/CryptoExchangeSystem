@@ -20,11 +20,11 @@ public class Order {
     @NonNull
     private OrderType type;
     @NonNull
-    private String status;
-    @NonNull
     private double quantity;
     @NonNull
     private double pricePerAsset;
+
+    private OrderStatus orderStatus;
 
     private LocalDateTime createdAt;
 

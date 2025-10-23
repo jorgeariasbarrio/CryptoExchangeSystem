@@ -2,12 +2,16 @@ package com.order.portfolio_client.service;
 
 import com.order.portfolio_client.dto.CreatePortfolioRequest;
 import com.order.portfolio_client.dto.OperationPortfolioRequest;
+import com.order.portfolio_client.dto.ReserveBalanceRequest;
 import com.order.portfolio_client.exceptions.PortfolioAlreadyExistsException;
 import com.order.portfolio_client.exceptions.PortfolioNotFoundException;
+import com.order.portfolio_client.exceptions.ReserveBalanceException;
 import com.order.portfolio_client.model.OrderType;
 import com.order.portfolio_client.model.Portfolio;
 import com.order.portfolio_client.repository.PortfolioRepository;
+import com.order.portfolio_client.repository.PortfolioRepositoryCustom;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -18,6 +22,9 @@ import java.util.Optional;
 public class PortfolioService {
 
     private final PortfolioRepository repository;
+
+    @Autowired
+    private final PortfolioRepositoryCustom repositoryCustom;
 
     public Optional<Portfolio> getPortfolio(Long userId) {
         return repository.findByUserId(userId);
@@ -54,5 +61,19 @@ public class PortfolioService {
             }
         }
 
+    }
+
+    public String reserveBalance (ReserveBalanceRequest reserveBalanceRequest){
+        try {
+            boolean successful = repositoryCustom.reserveBalance(reserveBalanceRequest.getUserId(), reserveBalanceRequest.getBalance());
+            if (!successful){
+                throw new ReserveBalanceException("Balance reserve couldn´t be made");
+            }
+            else {
+                return "OK";
+            }
+        }catch (Exception e){
+            throw new ReserveBalanceException("Balance reserve couldn´t be made");
+        }
     }
 }

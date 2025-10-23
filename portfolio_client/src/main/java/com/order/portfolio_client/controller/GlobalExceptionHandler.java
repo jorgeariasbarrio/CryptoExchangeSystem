@@ -1,6 +1,7 @@
 package com.order.portfolio_client.controller;
 
 import com.order.portfolio_client.exceptions.PortfolioAlreadyExistsException;
+import com.order.portfolio_client.exceptions.ReserveBalanceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -12,6 +13,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(PortfolioAlreadyExistsException.class)
     public ResponseEntity<String> handlePortfolioExists(PortfolioAlreadyExistsException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(ReserveBalanceException.class)
+    public ResponseEntity<String> handleReserveBalanceError(ReserveBalanceException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_MODIFIED).body(ex.getMessage());
     }
 }
 

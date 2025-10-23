@@ -2,6 +2,7 @@ package com.order.order_service.service;
 
 import com.order.order_service.client.PortfolioClient;
 import com.order.order_service.model.Order;
+import com.order.order_service.model.OrderStatus;
 import com.order.order_service.model.OrderType;
 import com.order.order_service.model.PortfolioRequestDto;
 import com.order.order_service.repository.OrderRepository;
@@ -23,8 +24,8 @@ public class OrderService {
 
     public Order createOrder(Order order) {
 
-
         PortfolioRequestDto portfolioRequestDto = new PortfolioRequestDto(order.getUserId(), order.getProductId(), order.getQuantity(), order.getType(), order.getPricePerAsset());
+        log.info(portfolioRequestDto.toString());
         String valid = portfolioClient.hasEnoughBalance(portfolioRequestDto);
 
 
@@ -32,13 +33,13 @@ public class OrderService {
             throw new IllegalArgumentException("Insufficient balance or assets");
         }
 
-        order.setStatus("CREATED");
         order.setCreatedAt(LocalDateTime.now());
 
-        log.info("Creating order ...");
+        log.info("Creating order in PENDING status...");
+        order.setOrderStatus(OrderStatus.PENDING);
         Order saved = orderRepository.save(order);
         log.info("Adding request to topic");
-        kafkaTemplate.send("order.created", saved);
+        kafkaTemplate.send("order.pending", saved);
 
         return saved;
     }

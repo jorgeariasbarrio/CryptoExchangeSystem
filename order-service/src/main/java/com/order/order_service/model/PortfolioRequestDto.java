@@ -12,6 +12,11 @@ public class PortfolioRequestDto {
     private Double assetQty;
 
     public PortfolioRequestDto(long userId, String assetType, double balance, OrderType orderType, Double pricePerAsset) {
+        this.userId = userId;
+        this.assetType = assetType;
+        this.balance = balance;
+        this.orderType = orderType;
+        this.pricePerAsset = pricePerAsset;
     }
 }
 
