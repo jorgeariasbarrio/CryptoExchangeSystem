@@ -2,6 +2,7 @@ package com.order.portfolio_client.service;
 
 import com.order.portfolio_client.dto.CreatePortfolioRequest;
 import com.order.portfolio_client.dto.OperationPortfolioRequest;
+import com.order.portfolio_client.dto.ReserveAssetRequest;
 import com.order.portfolio_client.dto.ReserveBalanceRequest;
 import com.order.portfolio_client.exceptions.PortfolioAlreadyExistsException;
 import com.order.portfolio_client.exceptions.PortfolioNotFoundException;
@@ -46,6 +47,9 @@ public class PortfolioService {
                 .orElseThrow(() -> new PortfolioNotFoundException(operationPortfolioRequest.getUserId()));
         if (operationPortfolioRequest.getOrderType().equals(OrderType.SELL)){
             Double assetQuantity = portfolio.getAssets().get(operationPortfolioRequest.getAssetType());
+            if (assetQuantity == null ){
+                throw new IllegalArgumentException("Porfolio of customerId: "+ operationPortfolioRequest.getUserId() + "doesn´t have the asset " + operationPortfolioRequest.getAssetType());
+            }
             if (assetQuantity < operationPortfolioRequest.getAssetQty()){
                 throw new IllegalArgumentException("Insufficient asset quantity for completing the sale");
             }
@@ -66,14 +70,28 @@ public class PortfolioService {
     public String reserveBalance (ReserveBalanceRequest reserveBalanceRequest){
         try {
             boolean successful = repositoryCustom.reserveBalance(reserveBalanceRequest.getUserId(), reserveBalanceRequest.getBalance());
-            if (!successful){
-                throw new ReserveBalanceException("Balance reserve couldn´t be made");
+            if (successful){
+                return "OK";
             }
             else {
-                return "OK";
+              return "KO";
             }
         }catch (Exception e){
             throw new ReserveBalanceException("Balance reserve couldn´t be made");
+        }
+    }
+
+    public String reserveAsset (ReserveAssetRequest reserveAssetRequest){
+        try {
+            boolean successful = repositoryCustom.reserveAsset(reserveAssetRequest.getUserId(), reserveAssetRequest.getQuantity(), reserveAssetRequest.getAsset());
+            if (successful){
+                return "OK";
+            }
+            else {
+                return "KO";
+            }
+        }catch (Exception e){
+            throw new ReserveBalanceException("Asset reserve couldn´t be made");
         }
     }
 }

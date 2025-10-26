@@ -3,6 +3,7 @@ package com.order.portfolio_client.controller;
 
 import com.order.portfolio_client.dto.CreatePortfolioRequest;
 import com.order.portfolio_client.dto.OperationPortfolioRequest;
+import com.order.portfolio_client.dto.ReserveAssetRequest;
 import com.order.portfolio_client.dto.ReserveBalanceRequest;
 import com.order.portfolio_client.exceptions.PortfolioAlreadyExistsException;
 import com.order.portfolio_client.exceptions.PortfolioCreatingError;
@@ -52,9 +53,17 @@ public class PortfolioController {
             String response = service.reserveBalance(request);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            throw new PortfolioCreatingError("Can´t create portfolio for user with Id" + request.getUserId().toString());
+            throw new PortfolioCreatingError("Can´t reserve balance for user with userId: " + request.getUserId().toString());
         }
+    }
 
-
+    @PostMapping("/reserveAsset")
+    public ResponseEntity<String> reserveAsset(@RequestBody ReserveAssetRequest request) {
+        try {
+            String response = service.reserveAsset(request);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            throw new PortfolioCreatingError("Can´t reserve balance for user with userId: " + request.getUserId().toString());
+        }
     }
 }

@@ -1,10 +1,7 @@
 package com.order.order_service.service;
 
 import com.order.order_service.client.PortfolioClient;
-import com.order.order_service.model.Order;
-import com.order.order_service.model.OrderStatus;
-import com.order.order_service.model.OrderType;
-import com.order.order_service.model.PortfolioRequestDto;
+import com.order.order_service.model.*;
 import com.order.order_service.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +29,22 @@ public class OrderService {
         if (!valid.equals("OK")) {
             throw new IllegalArgumentException("Insufficient balance or assets");
         }
-
+        if (order.getType().equals(OrderType.BUY)) {
+            ReserveBalanceRequest reserveBalanceRequest = new ReserveBalanceRequest(order.getUserId(), order.getQuantity() * order.getPricePerAsset());
+            String validBalanceReserve = portfolioClient.reserveBalance(reserveBalanceRequest);
+            if (validBalanceReserve.equals("KO")){
+                throw new IllegalArgumentException("Coudn´t reserve balance with quantity " +
+                        order.getQuantity() * order.getPricePerAsset() + "for user with userId " + order.getUserId());
+            }
+        }
+        else {
+            ReserveAssetRequest reserveAssetRequest = new ReserveAssetRequest(order.getUserId(), order.getQuantity(), order.getProductId());
+            String validBalanceReserve = portfolioClient.reserveAsset(reserveAssetRequest);
+            if (validBalanceReserve.equals("KO")){
+                throw new IllegalArgumentException("Coudn´t reserve asset type " + order.getProductId() +" with quantity " +
+                        order.getQuantity() + "for user with userId " + order.getUserId());
+            }
+        }
         order.setCreatedAt(LocalDateTime.now());
 
         log.info("Creating order in PENDING status...");

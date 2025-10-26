@@ -20,8 +20,22 @@ public class PortfolioRepositoryCustomImpl implements PortfolioRepositoryCustom 
         Query query = new Query(Criteria.where("userId").is(userId));
 
         Update update = new Update().inc("reservedBalance", balanceToReserve)
-                .inc("availableBalance", -balanceToReserve);
-        query.addCriteria(Criteria.where("availableBalance").gte(balanceToReserve));
+                .inc("balance", -balanceToReserve);
+        query.addCriteria(Criteria.where("balance").gte(balanceToReserve));
+
+        var result = mongoTemplate.updateFirst(query, update, Portfolio.class);
+
+        return result.getModifiedCount() > 0;
+    }
+
+    @Override
+    public boolean reserveAsset(Long userId, Double quantity, String assetType) {
+
+        Query query = new Query(Criteria.where("userId").is(userId));
+
+        Update update = new Update().inc("reservedAsset." + assetType, quantity)
+                .inc("asset." + assetType, -quantity);
+        query.addCriteria(Criteria.where("asset." + assetType).gte(quantity));
 
         var result = mongoTemplate.updateFirst(query, update, Portfolio.class);
 
