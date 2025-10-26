@@ -12,9 +12,9 @@ It tries to simulate a pure exchange system:
 
 The platform is composed of the following microservices:
  
-- **order-service** → Handles client order creation, emits creation events, and stores order data.
+- **order-service** → Handles client order creation, emits creation events, and stores order data -- CREATED 
 - **user-service** → Manages user registration, authentication, and account management.
-- **portfolio-service** → Core business logic for portfolio operations (balances, assets, movements, etc.).
+- **portfolio-service** → Core business logic for portfolio operations (balances, assets, movements, etc.) -- CREATED
 - **engine-service** → Responsible for matching and executing exchanges between client orders.
 Shared infrastructure components:
 - **Kafka** (broker + Zookeeper)
