@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: matching-engine
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/exchange
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: matching-engine
+      auto-offset-reset: earliest
