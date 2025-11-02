@@ -32,16 +32,15 @@ public class OrderService {
         if (order.getType().equals(OrderType.BUY)) {
             ReserveBalanceRequest reserveBalanceRequest = new ReserveBalanceRequest(order.getUserId(), order.getQuantity() * order.getPricePerAsset());
             String validBalanceReserve = portfolioClient.reserveBalance(reserveBalanceRequest);
-            if (validBalanceReserve.equals("KO")){
+            if (validBalanceReserve.equals("KO")) {
                 throw new IllegalArgumentException("Coudn´t reserve balance with quantity " +
                         order.getQuantity() * order.getPricePerAsset() + "for user with userId " + order.getUserId());
             }
-        }
-        else {
+        } else {
             ReserveAssetRequest reserveAssetRequest = new ReserveAssetRequest(order.getUserId(), order.getQuantity(), order.getProductId());
             String validBalanceReserve = portfolioClient.reserveAsset(reserveAssetRequest);
-            if (validBalanceReserve.equals("KO")){
-                throw new IllegalArgumentException("Coudn´t reserve asset type " + order.getProductId() +" with quantity " +
+            if (validBalanceReserve.equals("KO")) {
+                throw new IllegalArgumentException("Coudn´t reserve asset type " + order.getProductId() + " with quantity " +
                         order.getQuantity() + "for user with userId " + order.getUserId());
             }
         }
@@ -52,8 +51,19 @@ public class OrderService {
         Order saved = orderRepository.save(order);
         log.info("Adding request to topic");
         kafkaTemplate.send("order.pending", saved);
-
         return saved;
+    }
+
+    public Order completedOrder(Order order) {
+        log.info("Updating order from PENDING status to COMPLETED status");
+        PortfolioRequestDto portfolioRequestDto = new PortfolioRequestDto(order.getUserId(), order.getProductId(), order.getQuantity(),
+                order.getType(), order.getPricePerAsset());
+        portfolioRequestDto.setOrderType(order.getType());
+        portfolioClient.updatePorfolio(portfolioRequestDto);
+        order.setOrderStatus(OrderStatus.COMPLETED);
+        orderRepository.save(order);
+        log.info("Updated order with orderId {} from PENDING status to COMPLETED status", order.getId());
+        return order;
     }
 }
 

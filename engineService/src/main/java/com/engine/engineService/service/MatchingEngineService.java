@@ -1,5 +1,6 @@
 package com.engine.engineService.service;
 
+import com.engine.engineService.core.OrderBook;
 import com.engine.engineService.domain.Order;
 import com.engine.engineService.domain.Trade;
 import com.engine.engineService.repository.OrderRepository;
@@ -15,9 +16,8 @@ import java.util.Optional;
 public class MatchingEngineService {
 
     private final OrderRepository orderRepository;
-    private final OrderBook match
-    S
-     ervice orderBookService;
+    private final OrderBook match;
+    OrderBookService orderBookService;
 
     public void processOrder(Order newOrder) {
         orderRepository.save(newOrder);

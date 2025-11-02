@@ -37,4 +37,7 @@ public class PortfolioClient {
     public String reserveAsset(@RequestBody ReserveAssetRequest request){
         return restTemplate.postForObject(baseUrl + "/reserveAsset", request, String.class);
     }
+    public void updatePorfolio(@RequestBody PortfolioRequestDto request){
+        restTemplate.put(baseUrl + "/updateOrderBalanceReserved", request);
+    }
 }

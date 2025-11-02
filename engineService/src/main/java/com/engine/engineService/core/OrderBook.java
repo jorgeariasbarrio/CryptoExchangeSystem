@@ -2,13 +2,20 @@ package com.engine.engineService.core;
 
 import com.engine.engineService.domain.Order;
 import com.engine.engineService.domain.OrderType;
+import com.engine.engineService.kafka.OrderProducer;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 import java.util.Comparator;
 import java.util.PriorityQueue;
 
+@Component
 @Slf4j
+@RequiredArgsConstructor
 public class OrderBook {
+
+    private OrderProducer orderProducer;
 
     private final PriorityQueue<Order> buyOrders =
             new PriorityQueue<>(Comparator.comparingDouble(Order::getPrice).reversed()); // always highest first
@@ -36,7 +43,7 @@ public class OrderBook {
             log.info("TRADE EXECUTED: BUY {} vs SELL {} @ {} qty {}",
                     buyOrder.getId(), sellOrder.getId(), tradePrice, tradedQty);
 
-            // Actualizamos ambos órdenes
+
             buyOrder.fill(tradedQty);
             sellOrder.fill(tradedQty);
 
@@ -44,12 +51,13 @@ public class OrderBook {
                 sellOrders.poll(); // eliminar del libro si se completó
             }
 
-            // aquí podrías emitir un evento 'trade' a Kafka o actualizar portfolio
         }
 
-        // Si aún queda cantidad sin ejecutar, la agregamos al libro
         if (!buyOrder.isFilled()) {
             buyOrders.add(buyOrder);
+        }
+        else {
+            orderProducer.sendOrder("order-completed", buyOrder);
         }
     }
 
@@ -75,6 +83,9 @@ public class OrderBook {
 
         if (!sellOrder.isFilled()) {
             sellOrders.add(sellOrder);
+        }
+        else {
+            orderProducer.sendOrder("order-completed", sellOrder);
         }
     }
 
