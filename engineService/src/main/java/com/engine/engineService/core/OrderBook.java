@@ -1,8 +1,10 @@
 package com.engine.engineService.core;
 
+import com.engine.engineService.client.PortfolioClient;
 import com.engine.engineService.domain.Order;
 import com.engine.engineService.domain.OrderType;
 import com.engine.engineService.kafka.OrderProducer;
+import com.engine.engineService.model.PortfolioRequestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -16,6 +18,8 @@ import java.util.PriorityQueue;
 public class OrderBook {
 
     private OrderProducer orderProducer;
+
+    private PortfolioClient portfolioClient;
 
     private final PriorityQueue<Order> buyOrders =
             new PriorityQueue<>(Comparator.comparingDouble(Order::getPrice).reversed()); // always highest first
@@ -43,16 +47,18 @@ public class OrderBook {
             log.info("TRADE EXECUTED: BUY {} vs SELL {} @ {} qty {}",
                     buyOrder.getId(), sellOrder.getId(), tradePrice, tradedQty);
 
-
             buyOrder.fill(tradedQty);
+            PortfolioRequestDto portfolioRequestDto = new PortfolioRequestDto(buyOrder.getUserId(),
+                    buyOrder.getAsset(), buyOrder.getQuantity(), OrderType.BUY, buyOrder.getPrice());
+            portfolioClient.updatePorfolio(portfolioRequestDto);
             sellOrder.fill(tradedQty);
-
+            portfolioRequestDto = new PortfolioRequestDto(sellOrder.getUserId(),
+                    sellOrder.getAsset(), sellOrder.getQuantity(), OrderType.SELL, sellOrder.getPrice());
+            portfolioClient.updatePorfolio(portfolioRequestDto);
             if (sellOrder.isFilled()) {
-                sellOrders.poll(); // eliminar del libro si se completó
+                sellOrders.poll();
             }
-
         }
-
         if (!buyOrder.isFilled()) {
             buyOrders.add(buyOrder);
         }
@@ -74,7 +80,13 @@ public class OrderBook {
                     sellOrder.getId(), buyOrder.getId(), tradePrice, tradedQty);
 
             sellOrder.fill(tradedQty);
+            PortfolioRequestDto portfolioRequestDto = new PortfolioRequestDto(sellOrder.getUserId(),
+                    sellOrder.getAsset(), sellOrder.getQuantity(), OrderType.SELL, sellOrder.getPrice());
+            portfolioClient.updatePorfolio(portfolioRequestDto);
             buyOrder.fill(tradedQty);
+            portfolioRequestDto = new PortfolioRequestDto(buyOrder.getUserId(),
+                    buyOrder.getAsset(), buyOrder.getQuantity(), OrderType.BUY, buyOrder.getPrice());
+            portfolioClient.updatePorfolio(portfolioRequestDto);
 
             if (buyOrder.isFilled()) {
                 buyOrders.poll();

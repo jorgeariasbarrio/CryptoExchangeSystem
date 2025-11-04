@@ -1,7 +1,10 @@
 package com.order.portfolio_client.repository.impl;
 
+import com.order.portfolio_client.dto.OperationPortfolioRequest;
+import com.order.portfolio_client.model.OrderType;
 import com.order.portfolio_client.model.Portfolio;
 import com.order.portfolio_client.repository.PortfolioRepositoryCustom;
+import jdk.dynalink.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -41,4 +44,26 @@ public class PortfolioRepositoryCustomImpl implements PortfolioRepositoryCustom 
 
         return result.getModifiedCount() > 0;
     }
+
+    @Override
+    public boolean updateReservedQty(OperationPortfolioRequest operationPortfolioRequest) {
+        Query query = new Query(Criteria.where("userId").is(operationPortfolioRequest.getUserId()));
+        Update update = new Update();
+        if (operationPortfolioRequest.getOrderType().equals(OrderType.SELL)){
+            update = new Update().inc("reservedAsset." + operationPortfolioRequest.getAssetType(), -operationPortfolioRequest.getAssetQty())
+                    .inc("balance", operationPortfolioRequest.getBalance());
+            query.addCriteria(Criteria.where("reservedAsset." + operationPortfolioRequest.getAssetType()).gte(operationPortfolioRequest.getAssetQty()));
+        }
+        else {
+            update = new Update().inc("reservedBalance", -operationPortfolioRequest.getBalance())
+                    .inc("asset." + operationPortfolioRequest.getAssetType(), operationPortfolioRequest.getAssetQty());
+
+            query.addCriteria(Criteria.where("reservedBalance").gte(operationPortfolioRequest.getBalance()));
+        }
+
+        var result = mongoTemplate.updateFirst(query, update, Portfolio.class);
+        return result.getModifiedCount() > 0;
+    }
+
+
 }

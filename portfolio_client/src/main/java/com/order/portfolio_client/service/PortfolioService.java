@@ -94,4 +94,19 @@ public class PortfolioService {
             throw new ReserveBalanceException("Asset reserve couldn´t be made");
         }
     }
+
+    public String updatePortfolio (OperationPortfolioRequest operationPortfolioRequest){
+        try {
+            boolean successful = repositoryCustom.updateReservedQty(operationPortfolioRequest);
+            if (successful){
+                return "OK";
+            }
+            else {
+                return "KO";
+            }
+        }catch (Exception e){
+            // toDO New exception to catch if can´t update portfolio
+            throw new ReserveBalanceException("Asset reserve couldn´t be made");
+        }
+    }
 }

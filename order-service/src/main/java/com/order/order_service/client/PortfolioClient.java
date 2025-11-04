@@ -4,6 +4,8 @@ import com.order.order_service.model.PortfolioRequestDto;
 import com.order.order_service.model.ReserveAssetRequest;
 import com.order.order_service.model.ReserveBalanceRequest;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,7 +39,12 @@ public class PortfolioClient {
     public String reserveAsset(@RequestBody ReserveAssetRequest request){
         return restTemplate.postForObject(baseUrl + "/reserveAsset", request, String.class);
     }
-    public void updatePorfolio(@RequestBody PortfolioRequestDto request){
-        restTemplate.put(baseUrl + "/updateOrderBalanceReserved", request);
+    public String updatePorfolio(@RequestBody PortfolioRequestDto request){
+        return restTemplate.exchange(
+                baseUrl + "/updatePorfolio",
+                HttpMethod.PUT,
+                new HttpEntity<>(request),
+                String.class
+        ).toString();
     }
 }

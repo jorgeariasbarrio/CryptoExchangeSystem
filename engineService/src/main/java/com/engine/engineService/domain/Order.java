@@ -15,7 +15,7 @@ public class Order {
     @Id
     private String id;
     @NonNull
-    private String userId;
+    private Long userId;
     @NonNull
     private OrderType type; // BUY or SELL
     @NonNull

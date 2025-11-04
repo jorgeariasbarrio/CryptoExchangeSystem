@@ -66,4 +66,16 @@ public class PortfolioController {
             throw new PortfolioCreatingError("Can´t reserve balance for user with userId: " + request.getUserId().toString());
         }
     }
+    @PutMapping ("/updatePortfolio")
+    public ResponseEntity<String> updatePortfolio(@RequestBody OperationPortfolioRequest operationPortfolioRequest){
+        try{
+            String response = service.updatePortfolio(operationPortfolioRequest);
+            return ResponseEntity.ok(response);
+        }catch (Exception e){
+            // toDO New exception to catch if can´t update portfolio
+            throw new PortfolioCreatingError("Can´t update portfolio for user with userId: " + operationPortfolioRequest.getUserId().toString()
+                    + "with operation" + operationPortfolioRequest.toString());
+        }
+
+    }
 }
