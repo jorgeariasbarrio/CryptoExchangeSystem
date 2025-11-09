@@ -9,28 +9,29 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 @Service
+@RequiredArgsConstructor
 @Slf4j
 public class OrderBookService {
 
-    private final Map<Double, List<Order>> buyOrders = new TreeMap<>(Comparator.reverseOrder());
-    private final Map<Double, List<Order>> sellOrders = new TreeMap<>();
+    private final OrderBook orderBook;
+    private final PortfolioClient portfolioClient;
+    private final OrderProducer orderProducer;
 
-    public synchronized Optional<Trade> match(Order order) {
-        if (order.getType() == OrderType.BUY) {
-            return matchBuy(order);
-        } else {
-            return matchSell(order);
-        }
-    }
+    public Optional<Trade> match(Order order) {
+        Optional<Trade> trade = orderBook.match(order);
 
-    private Optional<Trade> matchBuy(Order buyOrder) {
-        // Aquí va la lógica de matching BUY vs SELL
-        return Optional.empty();
-    }
+        trade.ifPresent(t -> {
+            log.info("Trade confirmed: {}", t);
 
-    private Optional<Trade> matchSell(Order sellOrder) {
-        // Aquí va la lógica de matching SELL vs BUY
-        return Optional.empty();
+            try {
+                portfolioClient.updatePorfolioFromTrade(t);
+                orderProducer.sendOrder("trade-executed", t);
+            } catch (Exception e) {
+                log.error("Error updating portfolio or sending event: {}", e.getMessage());
+            }
+        });
+
+        return trade;
     }
 }
 

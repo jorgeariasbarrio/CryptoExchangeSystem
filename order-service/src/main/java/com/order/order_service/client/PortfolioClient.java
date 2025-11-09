@@ -3,6 +3,7 @@ package com.order.order_service.client;
 import com.order.order_service.model.PortfolioRequestDto;
 import com.order.order_service.model.ReserveAssetRequest;
 import com.order.order_service.model.ReserveBalanceRequest;
+import jakarta.websocket.ClientEndpoint;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.client.RestTemplate;
 
 @Component
+@ClientEndpoint
 public class PortfolioClient {
 
     private final RestTemplate restTemplate;
