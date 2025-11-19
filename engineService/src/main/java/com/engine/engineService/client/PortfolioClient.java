@@ -27,7 +27,7 @@ public class PortfolioClient {
                 trade.getPrice()
         );
 
+
         restTemplate.put(baseUrl + "/updatePortfolio", buyerUpdate);
-        restTemplate.put(baseUrl + "/updatePortfolio", sellerUpdate);
     }
 }

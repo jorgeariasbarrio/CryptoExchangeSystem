@@ -13,7 +13,7 @@ import java.time.Instant;
 @Document(collection = "orders")
 public class Order {
     @Id
-    private String id;
+    private Long id;
     @NonNull
     private Long userId;
     @NonNull

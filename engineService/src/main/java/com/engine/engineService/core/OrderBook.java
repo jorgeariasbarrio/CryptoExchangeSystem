@@ -11,10 +11,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.Comparator;
+import java.util.Optional;
 import java.util.PriorityQueue;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class OrderBook {
 
     private final PriorityQueue<Order> buyOrders =
@@ -45,7 +47,7 @@ public class OrderBook {
             buyOrder.fill(qty);
             sellOrder.fill(qty);
 
-            Trade trade = new Trade(buyOrder.getId(), sellOrder.getId(), price, qty);
+            Trade trade = new Trade(buyOrder.getId(), sellOrder.getId(), sellOrder.getAsset(), price, qty);
 
             if (sellOrder.isFilled()) {
                 sellOrders.poll();
@@ -76,7 +78,7 @@ public class OrderBook {
             sellOrder.fill(qty);
             buyOrder.fill(qty);
 
-            Trade trade = new Trade(buyOrder.getId(), sellOrder.getId(), price, qty);
+            Trade trade = new Trade(buyOrder.getId(), sellOrder.getId(), sellOrder.getAsset(), price, qty);
 
             if (buyOrder.isFilled()) {
                 buyOrders.poll();

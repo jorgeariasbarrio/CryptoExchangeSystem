@@ -1,8 +1,12 @@
 package com.engine.engineService.service;
 
+import com.engine.engineService.client.PortfolioClient;
+import com.engine.engineService.core.OrderBook;
 import com.engine.engineService.domain.Order;
 import com.engine.engineService.domain.OrderType;
 import com.engine.engineService.domain.Trade;
+import com.engine.engineService.kafka.OrderProducer;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +29,7 @@ public class OrderBookService {
 
             try {
                 portfolioClient.updatePorfolioFromTrade(t);
-                orderProducer.sendOrder("trade-executed", t);
+                orderProducer.sendOrder("trade-executed", order);
             } catch (Exception e) {
                 log.error("Error updating portfolio or sending event: {}", e.getMessage());
             }
