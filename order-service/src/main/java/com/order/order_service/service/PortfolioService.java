@@ -2,6 +2,7 @@ package com.order.order_service.service;
 
 import com.order.order_service.client.PortfolioClient;
 import com.order.order_service.model.PortfolioRequestDto;
+import com.order.order_service.model.ReserveAssetRequest;
 import com.order.order_service.model.ReserveBalanceRequest;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
@@ -19,6 +20,18 @@ public class PortfolioService {
     @Retry(name = "hasEnoughBalance")
     public String hasEnoughBalance(PortfolioRequestDto dto) {
         return portfolioClient.hasEnoughBalance(dto);
+    }
+
+
+    public String reserveBalance(ReserveBalanceRequest reserveBalanceRequest){
+        return portfolioClient.reserveBalance(reserveBalanceRequest);
+    }
+
+    public String reserveAsset(ReserveAssetRequest reserveAssetRequest){
+        return portfolioClient.reserveAsset(reserveAssetRequest);
+    }
+    public String updatePortfolio (PortfolioRequestDto portfolioRequestDto){
+        return portfolioClient.updatePorfolio(portfolioRequestDto);
     }
 
     public String fallbackEnoughBalance(PortfolioRequestDto dto, Throwable t) {

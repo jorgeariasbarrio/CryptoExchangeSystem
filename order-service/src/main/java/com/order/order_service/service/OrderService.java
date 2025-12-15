@@ -59,7 +59,7 @@ public class OrderService {
         PortfolioRequestDto portfolioRequestDto = new PortfolioRequestDto(order.getUserId(), order.getProductId(), order.getQuantity(),
                 order.getType(), order.getPricePerAsset());
         portfolioRequestDto.setOrderType(order.getType());
-        String updatePortfolioResponse = portfolioService.updatePorfolio(portfolioRequestDto);
+        String updatePortfolioResponse = portfolioService.updatePortfolio(portfolioRequestDto);
         if (updatePortfolioResponse.equals("KO")){
             throw new RuntimeException("Can´t update reserved balance or assets for order with orderId" + order.getId());
         }
