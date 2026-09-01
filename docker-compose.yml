@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   zookeeper:
     image: confluentinc/cp-zookeeper:7.6.1
@@ -19,7 +21,7 @@ services:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
@@ -31,5 +33,54 @@ services:
     volumes:
       - mongo_data:/data/db
 
+  order-service:
+    build:
+      context: .
+      dockerfile: order-service/Dockerfile
+    container_name: order-service
+    depends_on:
+      - kafka
+      - mongo
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATA_MONGODB_HOST: mongo
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SERVER_PORT: 8081
+
+  portfolio-service:
+    build:
+      context: .
+      dockerfile: portfolio_client/Dockerfile
+    container_name: portfolio-service
+    depends_on:
+      - kafka
+      - mongo
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_DATA_MONGODB_HOST: mongo
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SERVER_PORT: 8082
+
+  engine-service:
+    build:
+      context: .
+      dockerfile: engineService/Dockerfile
+    container_name: engine-service
+    depends_on:
+      - kafka
+      - mongo
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://mongo:27017/exchange
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SERVER_PORT: 8080
+
 volumes:
   mongo_data:
+
+networks:
+  default:
+    driver: bridge

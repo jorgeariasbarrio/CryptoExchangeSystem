@@ -4,21 +4,21 @@ spring:
 
   data:
     mongodb:
-      host: localhost
-      port: 27017
-      database: ordersdb
+      host: ${SPRING_DATA_MONGODB_HOST:localhost}
+      port: ${SPRING_DATA_MONGODB_PORT:27017}
+      database: ${SPRING_DATA_MONGODB_DATABASE:ordersdb}
 
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
 server:
-  port: 8081
+  port: ${SERVER_PORT:8081}
 portfolio:
   service:
-    base-url: http://localhost:8082/api/portfolio
+    base-url: ${PORTFOLIO_BASE_URL:http://localhost:8082/api/portfolio}
 
 resilience4j:
   circuitbreaker:

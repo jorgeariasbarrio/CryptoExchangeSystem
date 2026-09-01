@@ -3,12 +3,14 @@ spring:
     name: matching-engine
   data:
     mongodb:
-      uri: mongodb://localhost:27017/exchange
+      uri: ${SPRING_DATA_MONGODB_URI:mongodb://localhost:27017/exchange}
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     consumer:
-      group-id: matching-engine
+      group-id: ${KAFKA_CONSUMER_GROUP:matching-engine}
       auto-offset-reset: earliest
 portfolio:
   service:
-    base-url: http://localhost:8082/api/portfolio
+    base-url: ${PORTFOLIO_BASE_URL:http://localhost:8082/api/portfolio}
+server:
+  port: ${SERVER_PORT:8080}
